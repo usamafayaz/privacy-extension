@@ -1,15 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
   const blurNames = document.getElementById("blurNames");
   const blurMessages = document.getElementById("blurMessages");
-  const hideLastMessage = document.getElementById("hideLastMessage");
+  const hideProfilePictures = document.getElementById("hideProfilePictures");
+  const hideLastMessages = document.getElementById("hideLastMessages");
+  const hideMedia = document.getElementById("hideMedia");
 
   // Load saved settings
   chrome.storage.sync.get(
-    ["blurNames", "blurMessages", "hideLastMessage"],
+    [
+      "blurNames",
+      "blurMessages",
+      "hideProfilePictures",
+      "hideLastMessages",
+      "hideMedia",
+    ],
     function (data) {
       blurNames.checked = data.blurNames !== false;
       blurMessages.checked = data.blurMessages !== false;
-      hideLastMessage.checked = data.hideLastMessage !== false;
+      hideProfilePictures.checked = data.hideProfilePictures !== false;
+      hideLastMessages.checked = data.hideLastMessages !== false;
+      hideMedia.checked = data.hideMedia !== false;
     }
   );
 
@@ -19,7 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
       {
         blurNames: blurNames.checked,
         blurMessages: blurMessages.checked,
-        hideLastMessage: hideLastMessage.checked,
+        hideProfilePictures: hideProfilePictures.checked,
+        hideLastMessages: hideLastMessages.checked,
+        hideMedia: hideMedia.checked,
       },
       function () {
         // Notify content script that settings have changed
@@ -35,5 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   blurNames.addEventListener("change", saveSettings);
   blurMessages.addEventListener("change", saveSettings);
-  hideLastMessage.addEventListener("change", saveSettings);
+  hideProfilePictures.addEventListener("change", saveSettings);
+  hideLastMessages.addEventListener("change", saveSettings);
+  hideMedia.addEventListener("change", saveSettings);
 });

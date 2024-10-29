@@ -1,31 +1,52 @@
-// content.js
+const CLASS_NAMES = {
+  blurContent: "blur-content",
+  hideContent: "hide-content",
+  chatNames: 'span[title][dir="auto"]',
+  messages: "div.copyable-text",
+  profilePictures: 'img[data-testid="user-avatar"]',
+  lastMessages:
+    'div[data-testid="cell-frame-container"] div[aria-label] span[class]:not([data-testid])',
+  media: 'div[data-testid="media-viewer-container"]',
+};
+
 let settings = {
   blurNames: true,
   blurMessages: true,
-  hideLastMessage: true,
+  hideProfilePictures: true,
+  hideLastMessages: true,
+  hideMedia: true,
 };
 
 function applyPrivacyFeatures() {
   // Blur chat names and group names
-  const chatNames = document.querySelectorAll('span[title][dir="auto"]');
-  chatNames.forEach((element) => {
-    element.classList.toggle("blur-content", settings.blurNames);
+  document.querySelectorAll(CLASS_NAMES.chatNames).forEach((element) => {
+    element.classList.toggle(CLASS_NAMES.blurContent, settings.blurNames);
   });
 
   // Blur messages in the chat window
-  const messages = document.querySelectorAll("div.copyable-text");
-  messages.forEach((element) => {
-    element.classList.toggle("blur-content", settings.blurMessages);
+  document.querySelectorAll(CLASS_NAMES.messages).forEach((element) => {
+    element.classList.toggle(CLASS_NAMES.blurContent, settings.blurMessages);
   });
 
-  // Select last messages and apply blur
-  const lastMessages = document.querySelectorAll(
-    'div[data-testid="cell-frame-container"] div[aria-label] span[class]:not([data-testid])'
-  );
+  // Hide profile pictures in the chat list
+  document.querySelectorAll(CLASS_NAMES.profilePictures).forEach((element) => {
+    element.classList.toggle(
+      CLASS_NAMES.hideContent,
+      settings.hideProfilePictures
+    );
+  });
 
-  lastMessages.forEach((element) => {
-    // Apply blur if hideLastMessage setting is enabled
-    element.classList.toggle("blur-content", settings.hideLastMessage);
+  // Hide last messages in the chat list
+  document.querySelectorAll(CLASS_NAMES.lastMessages).forEach((element) => {
+    element.classList.toggle(
+      CLASS_NAMES.hideContent,
+      settings.hideLastMessages
+    );
+  });
+
+  // Hide media in the chat window
+  document.querySelectorAll(CLASS_NAMES.media).forEach((element) => {
+    element.classList.toggle(CLASS_NAMES.hideContent, settings.hideMedia);
   });
 }
 
@@ -45,12 +66,20 @@ function observeDOM() {
 
 // Load settings and apply features
 chrome.storage.sync.get(
-  ["blurNames", "blurMessages", "hideLastMessage"],
+  [
+    "blurNames",
+    "blurMessages",
+    "hideProfilePictures",
+    "hideLastMessages",
+    "hideMedia",
+  ],
   function (data) {
     settings = {
       blurNames: data.blurNames !== false,
       blurMessages: data.blurMessages !== false,
-      hideLastMessage: data.hideLastMessage !== false,
+      hideProfilePictures: data.hideProfilePictures !== false,
+      hideLastMessages: data.hideLastMessages !== false,
+      hideMedia: data.hideMedia !== false,
     };
     applyPrivacyFeatures();
     observeDOM();
@@ -61,12 +90,20 @@ chrome.storage.sync.get(
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "updateSettings") {
     chrome.storage.sync.get(
-      ["blurNames", "blurMessages", "hideLastMessage"],
+      [
+        "blurNames",
+        "blurMessages",
+        "hideProfilePictures",
+        "hideLastMessages",
+        "hideMedia",
+      ],
       function (data) {
         settings = {
           blurNames: data.blurNames !== false,
           blurMessages: data.blurMessages !== false,
-          hideLastMessage: data.hideLastMessage !== false,
+          hideProfilePictures: data.hideProfilePictures !== false,
+          hideLastMessages: data.hideLastMessages !== false,
+          hideMedia: data.hideMedia !== false,
         };
         applyPrivacyFeatures();
       }
