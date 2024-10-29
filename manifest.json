@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "WhatsApp Web Privacy Blur",
+  "version": "1.0",
+  "description": "Blurs names, messages, and hides last messages in WhatsApp Web",
+  "permissions": ["https://web.whatsapp.com/*", "storage"],
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "css": ["styles.css"],
+      "js": ["content.js"]
+    }
+  ]
+}
